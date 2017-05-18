@@ -1,7 +1,7 @@
 use Tk;
 $mw = new MainWindow;
 $mw->optionAdd('*font' => 'fixed');
-$rows = 20;
+$rows = 100;
 @r;
 for $i(1..$rows){
 	push @r, $i;
@@ -62,7 +62,7 @@ $nodeIPText = $newCanvas->Label(
 	);
 
 $nodeIPInput = $newCanvas->Entry(
-	-width => 20,
+	-width => 15,
 	)->grid(
 	-row=>@r[0],
 	-column=>2,
@@ -95,14 +95,14 @@ $nodeAllowDBMCheckbuttonText = $newCanvas->Label(
 	-sticky=>"e",
 	);
 
-$nodeAllowDBM = $newCanvas->Checkbutton(
+$nodeAllowDBMBool = $newCanvas->Checkbutton(
 	)->grid(
 	-row=>@r[0],
 	-column=>2,
 	-sticky=>"w",
 	);
 splice(@r,0,1);
-$nodeIPText = $newCanvas->Label(
+$nodeIconText = $newCanvas->Label(
 	-text => 'Icon: ',
 	)->grid(
 	-row=>@r[0],
@@ -110,7 +110,7 @@ $nodeIPText = $newCanvas->Label(
 	-sticky=>"e",
 	);
 
-$nodeIPInput = $newCanvas->Entry(
+$nodeIconInput = $newCanvas->Entry(
 	-width => 20,
 	)->grid(
 	-row=>@r[0],
@@ -118,7 +118,7 @@ $nodeIPInput = $newCanvas->Entry(
 	-sticky=>'w',
 	);
 splice(@r,0,1);
-$nodeIPText = $newCanvas->Label(
+$nodeTypeText = $newCanvas->Label(
 	-text => 'Type: ',
 	)->grid(
 	-row=>@r[0],
@@ -126,7 +126,7 @@ $nodeIPText = $newCanvas->Label(
 	-sticky=>"e",
 	);
 
-$nodeIPInput = $newCanvas->Entry(
+$nodeTypeInput = $newCanvas->Entry(
 	-width => 20,
 	)->grid(
 	-row=>@r[0],
@@ -144,6 +144,40 @@ $nodePWText = $newCanvas->Label(
 
 $nodePWInput = $newCanvas->Entry(
 	-width => 20,
+	)->grid(
+	-row=>@r[0],
+	-column=>2,
+	-sticky=>'w',
+	);
+splice(@r,0,1);
+$nodeAccountText = $newCanvas->Label(
+	-text => 'Account: ',
+	)->grid(
+	-row=>@r[0],
+	-column=>1,
+	-sticky=>"e",
+	);
+
+$nodeAccountNewButton = $newCanvas->Button(
+	-text => 'New',
+	-width => 10,
+	)->grid(
+	-row=>@r[0],
+	-column=>2,
+	-sticky=>'w',
+	);
+splice(@r,0,1);
+$nodeMailAccountText = $newCanvas->Label(
+	-text => 'Mail Account: ',
+	)->grid(
+	-row=>@r[0],
+	-column=>1,
+	-sticky=>"e",
+	);
+
+$nodeMailAccountNewButton = $newCanvas->Button(
+	-text => 'New',
+	-width => 10,
 	)->grid(
 	-row=>@r[0],
 	-column=>2,
@@ -186,7 +220,7 @@ $nodePortsInput = $newCanvas->Entry(
 	);
 splice(@r,0,1);
 $nodePortsNeededText = $newCanvas->Label(
-	-text => 'Ports Needed: ',
+	-text => 'Ports For Crack: ',
 	)->grid(
 	-row=>@r[0],
 	-column=>1,
@@ -219,6 +253,118 @@ $nodeTraceTimeInput = $newCanvas->Entry(
 	-sticky=>'w',
 	);
 splice(@r,0,1);
+$nodePortRemapText = $newCanvas->Label(
+	-text => 'Port Remap: ',
+	)->grid(
+	-row=>@r[0],
+	-column=>1,
+	-sticky=>"e",
+	);
+
+$nodePortRemapInput = $newCanvas->Entry(
+	-width => 20,
+	-textvariable => "web=1234,22=2",
+	)->grid(
+	-row=>@r[0],
+	-column=>2,
+	-sticky=>'w',
+	);
+splice(@r,0,1);
+$nodeTrackerCheckbuttonText = $newCanvas->Label(
+	-text => 'Tracker: ',
+	)->grid(
+	-row=>@r[0],
+	-column=>1,
+	-sticky=>"e",
+	);
+
+$nodeTrackerBool = $newCanvas->Checkbutton(
+	)->grid(
+	-row=>@r[0],
+	-column=>2,
+	-sticky=>"w",
+	);
+splice(@r,0,1);
+$nodeDLinkText = $newCanvas->Label(
+	-text => 'DLink Target (Linked Computer): ',
+	)->grid(
+	-row=>@r[0],
+	-column=>1,
+	-sticky=>"e",
+	);
+
+$nodeDLinkInput = $newCanvas->Entry(
+	-width => 20,
+	-textvariable => "advExamplePC2",
+	)->grid(
+	-row=>@r[0],
+	-column=>2,
+	-sticky=>'w',
+	);
+splice(@r,0,1);
+$nodePositionText = $newCanvas->Label(
+	-text => 'Position Near: ',
+	)->grid(
+	-row=>@r[0],
+	-column=>1,
+	-sticky=>"e",
+	);
+
+$nodePositionNewButton = $newCanvas->Button(
+	-text => 'New',
+	-width => 10,
+	)->grid(
+	-row=>@r[0],
+	-column=>2,
+	-sticky=>'w',
+	);
+splice(@r,0,1);
+$nodeFileText = $newCanvas->Label(
+	-text => 'File: ',
+	)->grid(
+	-row=>@r[0],
+	-column=>1,
+	-sticky=>"e",
+	);
+
+$nodeFileNewButton = $newCanvas->Button(
+	-text => 'New',
+	-width => 10,
+	)->grid(
+	-row=>@r[0],
+	-column=>2,
+	-sticky=>'w',
+	);
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
