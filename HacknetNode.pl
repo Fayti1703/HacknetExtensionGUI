@@ -1,16 +1,18 @@
 #!/usr/bin/perl
-use strict;
-use warnings;
 
 use Tk;
+require Tk::Pane;
 my $mw = MainWindow->new();
 $mw->geometry( "750x1000" );
 $mw->optionAdd('*font' => 'fixed');
 my $rows = 100;
 my @r;
+my $AllowDBMBool = "false";
+
 for my $i(1..$rows){
 	push @r, $i;
 };
+
 my $frame = $mw->Scrolled(
     'Frame',
     -scrollbars => "e",
@@ -35,7 +37,7 @@ my $nodeIDText = $frame->Label(
 	-sticky=>"e",
 	);
 
-my $nodeIDInput = $frame->Entry(
+my $nodeIDEntry = $frame->Entry(
 	-width => '20',
 	)->grid(
 	-row=>$r[0],
@@ -51,7 +53,7 @@ my $nodeNameText = $frame->Label(
 	-sticky=>"e",
 	);
 
-my $nodeNameInput = $frame->Entry(
+my $nodeNameEntry = $frame->Entry(
 	-width => 20,
 	)->grid(
 	-row=>$r[0],
@@ -67,7 +69,7 @@ my $nodeIPText = $frame->Label(
 	-sticky=>"e",
 	);
 
-my $nodeIPInput = $frame->Entry(
+my $nodeIPEntry = $frame->Entry(
 	-width => 15,
 	)->grid(
 	-row=>$r[0],
@@ -83,7 +85,7 @@ my $nodeSecuritySpinboxText = $frame->Label(
 	-sticky=>"e",
 	);
 
-my $nodeSecuritySpinbox = $frame->Spinbox(
+my $nodeSecurityEntry = $frame->Spinbox(
 	-width=>3,
 	-from => 0,
 	-to => 6,
@@ -101,7 +103,10 @@ my $nodeAllowDBMCheckbuttonText = $frame->Label(
 	-sticky=>"e",
 	);
 
-my $nodeAllowDBMBool = $frame->Checkbutton(
+my $nodeAllowDBMCheckbutton = $frame->Checkbutton(
+	-onvalue => "true",
+	-offvalue => "false",
+	-variable => $AllowDBMBool,
 	)->grid(
 	-row=>$r[0],
 	-column=>2,
@@ -116,7 +121,7 @@ my $nodeIconText = $frame->Label(
 	-sticky=>"e",
 	);
 
-my $nodeIconInput = $frame->Entry(
+my $nodeIconEntry = $frame->Entry(
 	-width => 20,
 	)->grid(
 	-row=>$r[0],
@@ -132,7 +137,7 @@ my $nodeTypeText = $frame->Label(
 	-sticky=>"e",
 	);
 
-my $nodeTypeInput = $frame->Entry(
+my $nodeTypeEntry = $frame->Entry(
 	-width => 20,
 	)->grid(
 	-row=>$r[0],
@@ -148,7 +153,7 @@ my $nodePWText = $frame->Label(
 	-sticky=>"e",
 	);
 
-my $nodePWInput = $frame->Entry(
+my $nodePWEntry = $frame->Entry(
 	-width => 20,
 	)->grid(
 	-row=>$r[0],
@@ -166,7 +171,6 @@ my $nodeAccountText = $frame->Label(
 
 my $nodeAccountNewButton = $frame->Button(
 	-text => 'New',
-	-width => 10,
 	)->grid(
 	-row=>$r[0],
 	-column=>2,
@@ -183,7 +187,6 @@ my $nodeMailAccountText = $frame->Label(
 
 my $nodeMailAccountNewButton = $frame->Button(
 	-text => 'New',
-	-width => 10,
 	)->grid(
 	-row=>$r[0],
 	-column=>2,
@@ -198,7 +201,7 @@ my $nodeProxyTimeText = $frame->Label(
 	-sticky=>"e",
 	);
 
-my $nodeProxyTimeInput = $frame->Spinbox(
+my $nodeProxyTimeEntry = $frame->Spinbox(
 	-width => 2,
 	-from => -1,
 	-to => 99,
@@ -216,7 +219,7 @@ my $nodePortsText = $frame->Label(
 	-sticky=>"e",
 	);
 
-my $nodePortsInput = $frame->Entry(
+my $nodePortsEntry = $frame->Entry(
 	-width => 36,
 	-textvariable => '21, 22, 25, 80, 1433, 104, 6881, 443, 192, 554',
 	)->grid(
@@ -233,10 +236,26 @@ my $nodePortsNeededText = $frame->Label(
 	-sticky=>"e",
 	);
 
-my $nodePortsNeededInput = $frame->Spinbox(
+my $nodePortsNeededEntry = $frame->Spinbox(
 	-width => 2,
-	-from => -1,
+	-from => 0,
 	-to => 99,
+	)->grid(
+	-row=>$r[0],
+	-column=>2,
+	-sticky=>'w',
+	);
+splice(@r,0,1);
+my $nodeFirewallText = $frame->Label(
+	-text => 'Firewall: ',
+	)->grid(
+	-row=>$r[0],
+	-column=>1,
+	-sticky=>"e",
+	);
+
+my $nodeFirewallEntry = $frame->Button(
+	-text=>"New",
 	)->grid(
 	-row=>$r[0],
 	-column=>2,
@@ -251,7 +270,7 @@ my $nodeTraceTimeText = $frame->Label(
 	-sticky=>"e",
 	);
 
-my $nodeTraceTimeInput = $frame->Entry(
+my $nodeTraceTimeEntry = $frame->Entry(
 	-width => 20,
 	)->grid(
 	-row=>$r[0],
@@ -267,7 +286,7 @@ my $nodePortRemapText = $frame->Label(
 	-sticky=>"e",
 	);
 
-my $nodePortRemapInput = $frame->Entry(
+my $nodePortRemapEntry = $frame->Entry(
 	-width => 20,
 	-textvariable => "web=1234,22=2",
 	)->grid(
@@ -284,7 +303,7 @@ my $nodeTrackerCheckbuttonText = $frame->Label(
 	-sticky=>"e",
 	);
 
-my $nodeTrackerBool = $frame->Checkbutton(
+my $nodeTrackerCheckbutton = $frame->Checkbutton(
 	)->grid(
 	-row=>$r[0],
 	-column=>2,
@@ -299,7 +318,7 @@ my $nodeDLinkText = $frame->Label(
 	-sticky=>"e",
 	);
 
-my $nodeDLinkInput = $frame->Entry(
+my $nodeDLinkEntry = $frame->Entry(
 	-width => 20,
 	-textvariable => "advExamplePC2",
 	)->grid(
@@ -318,7 +337,6 @@ my $nodePositionText = $frame->Label(
 
 my $nodePositionNewButton = $frame->Button(
 	-text => 'New',
-	-width => 10,
 	)->grid(
 	-row=>$r[0],
 	-column=>2,
@@ -335,7 +353,6 @@ my $nodeFileText = $frame->Label(
 
 my $nodeFileNewButton = $frame->Button(
 	-text => 'New',
-	-width => 10,
 	)->grid(
 	-row=>$r[0],
 	-column=>2,
@@ -352,7 +369,6 @@ my $nodeCustomThemeText = $frame->Label(
 
 my $nodeCustomThemeNewButton = $frame->Button(
 	-text => 'New',
-	-width => 10,
 	)->grid(
 	-row=>$r[0],
 	-column=>2,
@@ -369,7 +385,6 @@ my $nodeDECFileText = $frame->Label(
 
 my $nodeDECFileNewButton = $frame->Button(
 	-text => 'New',
-	-width => 10,
 	)->grid(
 	-row=>$r[0],
 	-column=>2,
@@ -386,7 +401,6 @@ my $nodeEOSDeviceText = $frame->Label(
 
 my $nodeEOSDeviceNewButton = $frame->Button(
 	-text => 'New',
-	-width => 10,
 	)->grid(
 	-row=>$r[0],
 	-column=>2,
@@ -403,7 +417,6 @@ my $nodeMailServerText = $frame->Label(
 
 my $nodeMailServerNewButton = $frame->Button(
 	-text => 'New',
-	-width => 10,
 	)->grid(
 	-row=>$r[0],
 	-column=>2,
@@ -420,7 +433,6 @@ my $nodeUploadServerDaemonText = $frame->Label(
 
 my $nodeUploadServerDaemonNewButton = $frame->Button(
 	-text => 'New',
-	-width => 10,
 	)->grid(
 	-row=>$r[0],
 	-column=>2,
@@ -437,7 +449,6 @@ my $nodeWebServerText = $frame->Label(
 
 my $nodeWebServerNewButton = $frame->Button(
 	-text => 'New',
-	-width => 10,
 	)->grid(
 	-row=>$r[0],
 	-column=>2,
@@ -452,7 +463,7 @@ my $nodeDeathRowDatabaseText = $frame->Label(
 	-sticky=>"e",
 	);
 
-my $nodeDeathRowDatabaseBool = $frame->Checkbutton(
+my $nodeDeathRowDatabaseCheckbutton = $frame->Checkbutton(
 	)->grid(
 	-row=>$r[0],
 	-column=>2,
@@ -467,7 +478,7 @@ my $nodeAcademicDatabaseText = $frame->Label(
 	-sticky=>"e",
 	);
 
-my $nodeAcademicDatabaseBool = $frame->Checkbutton(
+my $nodeAcademicDatabaseCheckbutton = $frame->Checkbutton(
 	)->grid(
 	-row=>$r[0],
 	-column=>2,
@@ -482,7 +493,7 @@ my $nodeMedicalDatabaseText = $frame->Label(
 	-sticky=>"e",
 	);
 
-my $nodeMedicalDatabaseBool = $frame->Checkbutton(
+my $nodeMedicalDatabaseCheckbutton = $frame->Checkbutton(
 	)->grid(
 	-row=>$r[0],
 	-column=>2,
@@ -497,7 +508,7 @@ my $nodeISPSystemText = $frame->Label(
 	-sticky=>"e",
 	);
 
-my $nodeISPSystemBool = $frame->Checkbutton(
+my $nodeISPSystemCheckbutton = $frame->Checkbutton(
 	)->grid(
 	-row=>$r[0],
 	-column=>2,
@@ -514,7 +525,6 @@ my $nodeMessageBoardText = $frame->Label(
 
 my $nodeMessageBoardNewButton = $frame->Button(
 	-text => 'New',
-	-width => 10,
 	)->grid(
 	-row=>$r[0],
 	-column=>2,
@@ -531,7 +541,6 @@ my $nodeHeartMonitorText = $frame->Label(
 
 my $nodeHeartMonitorNewButton = $frame->Button(
 	-text => 'New',
-	-width => 10,
 	)->grid(
 	-row=>$r[0],
 	-column=>2,
@@ -546,47 +555,239 @@ my $nodePointClickerText = $frame->Label(
 	-sticky=>"e",
 	);
 
-my $nodePointClickerBool = $frame->Checkbutton(
+my $nodePointClickerCheckbutton = $frame->Checkbutton(
 	)->grid(
 	-row=>$r[0],
 	-column=>2,
 	-sticky=>'w',
 	);
+splice(@r,0,1);
+my $nodePSongChangerDaemonText = $frame->Label(
+	-text => 'Song Changer Daemon: ',
+	)->grid(
+	-row=>$r[0],
+	-column=>1,
+	-sticky=>"e",
+	);
 
+my $nodeSongChangerDaemonCheckbutton = $frame->Checkbutton(
+	)->grid(
+	-row=>$r[0],
+	-column=>2,
+	-sticky=>'w',
+	);
+splice(@r,0,1);
+my $nodeMissionListingServerText = $frame->Label(
+	-text => 'Mission Listing Server: ',
+	)->grid(
+	-row=>$r[0],
+	-column=>1,
+	-sticky=>"e",
+	);
 
+my $nodeMissionListingServerNewButton = $frame->Button(
+	-text => 'New',
+	)->grid(
+	-row=>$r[0],
+	-column=>2,
+	-sticky=>'w',
+	);
+splice(@r,0,1);
+my $nodeMissionHubServerText = $frame->Label(
+	-text => 'Mission Hub Server: ',
+	)->grid(
+	-row=>$r[0],
+	-column=>1,
+	-sticky=>"e",
+	);
 
+my $nodeMissionHubServerNewButton = $frame->Button(
+	-text => 'New',
+	)->grid(
+	-row=>$r[0],
+	-column=>2,
+	-sticky=>'w',
+	);
+splice(@r,0,1);
+my $nodeCreditsDaemonText = $frame->Label(
+	-text => 'Credits Daemon: ',
+	)->grid(
+	-row=>$r[0],
+	-column=>1,
+	-sticky=>"e",
+	);
 
+my $nodeCreditsDaemonNewButton = $frame->Button(
+	-text => 'New',
+	)->grid(
+	-row=>$r[0],
+	-column=>2,
+	-sticky=>'w',
+	);
+splice(@r,0,1);
+my $nodeMemoryDumpFileText = $frame->Label(
+	-text => 'Memory Dump File: ',
+	)->grid(
+	-row=>$r[0],
+	-column=>1,
+	-sticky=>"e",
+	);
 
+my $nodeMemoryDumpFileNewButton = $frame->Button(
+	-text => 'New',
+	)->grid(
+	-row=>$r[0],
+	-column=>2,
+	-sticky=>'w',
+	);
+splice(@r,0,1);
+my $nodeMemoryText = $frame->Label(
+	-text => 'Memory: ',
+	)->grid(
+	-row=>$r[0],
+	-column=>1,
+	-sticky=>"e",
+	);
 
+my $nodeMemoryNewButton = $frame->Button(
+	-text => 'New',
+	)->grid(
+	-row=>$r[0],
+	-column=>2,
+	-sticky=>'w',
+	);
+splice(@r,0,1);
+my $nodeDHSDaemonText = $frame->Label(
+	-text => 'DHS Daemon: ',
+	)->grid(
+	-row=>$r[0],
+	-column=>1,
+	-sticky=>"e",
+	);
 
+my $nodeDHSDaemonNewButton = $frame->Button(
+	-text => 'New',
+	)->grid(
+	-row=>$r[0],
+	-column=>2,
+	-sticky=>'w',
+	);
+splice(@r,0,1);
+my $nodeCustomConnectDisplayDaemonText = $frame->Label(
+	-text => 'Custom Connect Display Daemon: ',
+	)->grid(
+	-row=>$r[0],
+	-column=>1,
+	-sticky=>"e",
+	);
 
+my $nodeCustomConnectDisplayDaemonNewButton = $frame->Button(
+	-text => 'New',
+	)->grid(
+	-row=>$r[0],
+	-column=>2,
+	-sticky=>'w',
+	);
+splice(@r,0,1);
+my $nodeLogoDaemonText = $frame->Label(
+	-text => 'Logo Daemon: ',
+	)->grid(
+	-row=>$r[0],
+	-column=>1,
+	-sticky=>"e",
+	);
 
+my $nodeLogoDaemonNewButton = $frame->Button(
+	-text => 'New',
+	)->grid(
+	-row=>$r[0],
+	-column=>2,
+	-sticky=>'w',
+	);
+splice(@r,0,1);
+my $nodeLogoCustomConnectDisplayDaemonText = $frame->Label(
+	-text => 'Logo Custom Connect Display Daemon: ',
+	)->grid(
+	-row=>$r[0],
+	-column=>1,
+	-sticky=>"e",
+	);
 
+my $nodeLogoCustomConnectDisplayDaemonNewButton = $frame->Button(
+	-text => 'New',
+	)->grid(
+	-row=>$r[0],
+	-column=>2,
+	-sticky=>'w',
+	);
+splice(@r,0,1);
+my $nodeDatabaseDaemonText = $frame->Label(
+	-text => 'Database Daemon: ',
+	)->grid(
+	-row=>$r[0],
+	-column=>1,
+	-sticky=>"e",
+	);
 
+my $nodeDatabaseDaemonNewButton = $frame->Button(
+	-text => 'New',
+	)->grid(
+	-row=>$r[0],
+	-column=>2,
+	-sticky=>'w',
+	);
+splice(@r,0,1);
+my $nodeWhitelistAuthenticatorDaemonText = $frame->Label(
+	-text => 'Whitelist Authenticator Daemon: ',
+	)->grid(
+	-row=>$r[0],
+	-column=>1,
+	-sticky=>"e",
+	);
 
+my $nodeWhitelistAuthenticatorDaemonNewButton = $frame->Button(
+	-text => 'New',
+	)->grid(
+	-row=>$r[0],
+	-column=>2,
+	-sticky=>'w',
+	);
+splice(@r,0,1);
+my $nodeMarkovTextDaemonText = $frame->Label(
+	-text => 'Markov Text Daemon: ',
+	)->grid(
+	-row=>$r[0],
+	-column=>1,
+	-sticky=>"e",
+	);
 
+my $nodeMarkovTextDaemonNewButton = $frame->Button(
+	-text => 'New',
+	)->grid(
+	-row=>$r[0],
+	-column=>2,
+	-sticky=>'w',
+	);
+splice(@r,0,1);
+my $nodeIRCDaemonText = $frame->Label(
+	-text => 'IRC Daemon: ',
+	)->grid(
+	-row=>$r[0],
+	-column=>1,
+	-sticky=>"e",
+	);
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+my $nodeIRCDaemonNewButton = $frame->Button(
+	-text => 'New',
+	)->grid(
+	-row=>$r[0],
+	-column=>2,
+	-sticky=>'w',
+	);
 splice(@r,0,1);
 my $generateButton = $frame->Button(
     -text    => 'Generate XML',
-    -command => sub { exit },
+    -command => sub { genXML() },
     )->grid(
 	-row=>$r[0],
 	-column=>1,
@@ -603,3 +804,30 @@ my $quitButton = $frame->Button(
 	);
 
 MainLoop;
+
+sub genXML{
+	my $name = $nodeNameEntry->get;
+	my $fileName = join "", $name, ".xml";
+	open OUTFILE, '>', $fileName;
+	print OUTFILE '<?xml version = "1.0" encoding = "UTF-8" ?>'."\n";
+
+	print OUTFILE '<Computer id="'.$nodeIDEntry->get;
+	print OUTFILE '" name="'.$nodeNameEntry->get;
+	print OUTFILE '" ip="'.$nodeIPEntry->get;
+	print OUTFILE '" security="'.$nodeSecurityEntry->get;
+	print OUTFILE '" allowsDefaultBootModule="'.$AllowDBMBool;
+	print OUTFILE '" icon="'.$nodeIconEntry->get;
+	print OUTFILE '" type="'.$nodeTypeEntry->get.'" >'."\n";
+
+ 	print OUTFILE "\t".'<adminPass pass='.'"'.$nodePWEntry->get.'" />'."\n";
+
+ 	print OUTFILE "\t".'<ports>'.$nodePortsEntry->get.'</ports>'."\n";
+
+ 	print OUTFILE "\t".'<portsForCrack val='.'"'.$nodePortsNeededEntry->get.'" />'."\n";
+
+ 	print OUTFILE "\t".'<trace time ='.'"'.$nodeTraceTimeEntry->get.'" />'."\n";
+
+ 	print OUTFILE '</Computer>';
+
+	close OUTFILE;
+}
