@@ -1,337 +1,554 @@
+#!/usr/bin/perl
+use strict;
+use warnings;
+
 use Tk;
-$mw = new MainWindow;
+my $mw = MainWindow->new();
+$mw->geometry( "750x1000" );
 $mw->optionAdd('*font' => 'fixed');
-$rows = 100;
-@r;
-for $i(1..$rows){
+my $rows = 100;
+my @r;
+for my $i(1..$rows){
 	push @r, $i;
 };
-
-$newCanvas = $mw->Canvas(
+my $frame = $mw->Scrolled(
+    'Frame',
+    -scrollbars => "e",
+	-height => 900,
 	)->grid(
-	-row=>@r[0],
+	-row=>$r[0],
 	-column=>1,
 	);
-
-$title = $newCanvas->Label(
+my $title = $frame->Label(
 	-text => "Hacknet Node\n",
 	)->grid(
-	-row=>@r[0],
+	-row=>$r[0],
 	-column=>1,
 	-columnspan=>3,
 	);
 splice(@r,0,1);
-$nodeIDText = $newCanvas->Label(
+my $nodeIDText = $frame->Label(
 	-text => 'ID: ',
 	)->grid(
-	-row=>@r[0],
+	-row=>$r[0],
 	-column=>1,
 	-sticky=>"e",
 	);
 
-$nodeIDInput = $newCanvas->Entry(
+my $nodeIDInput = $frame->Entry(
 	-width => '20',
 	)->grid(
-	-row=>@r[0],
+	-row=>$r[0],
 	-column=>2,
 	-sticky=>'w',
 	);
 splice(@r,0,1);
-$nodeNameText = $newCanvas->Label(
+my $nodeNameText = $frame->Label(
 	-text => 'Name: ',
 	)->grid(
-	-row=>@r[0],
+	-row=>$r[0],
 	-column=>1,
 	-sticky=>"e",
 	);
 
-$nodeNameInput = $newCanvas->Entry(
+my $nodeNameInput = $frame->Entry(
 	-width => 20,
 	)->grid(
-	-row=>@r[0],
+	-row=>$r[0],
 	-column=>2,
 	-sticky=>'w',
 	);
 splice(@r,0,1);
-$nodeIPText = $newCanvas->Label(
+my $nodeIPText = $frame->Label(
 	-text => 'IP: ',
 	)->grid(
-	-row=>@r[0],
+	-row=>$r[0],
 	-column=>1,
 	-sticky=>"e",
 	);
 
-$nodeIPInput = $newCanvas->Entry(
+my $nodeIPInput = $frame->Entry(
 	-width => 15,
 	)->grid(
-	-row=>@r[0],
+	-row=>$r[0],
 	-column=>2,
 	-sticky=>'w',
 	);
 splice(@r,0,1);
-$nodeSecuritySpinboxText = $newCanvas->Label(
+my $nodeSecuritySpinboxText = $frame->Label(
 	-text => 'Security: ',
 	)->grid(
-	-row=>@r[0],
+	-row=>$r[0],
 	-column=>1,
 	-sticky=>"e",
 	);
 
-$nodeSecuritySpinbox = $newCanvas->Spinbox(
+my $nodeSecuritySpinbox = $frame->Spinbox(
 	-width=>3,
 	-from => 0,
 	-to => 6,
 	)->grid(
-	-row=>@r[0],
+	-row=>$r[0],
 	-column=>2,
 	-sticky=>"w",
 	);
 splice(@r,0,1);
-$nodeAllowDBMCheckbuttonText = $newCanvas->Label(
+my $nodeAllowDBMCheckbuttonText = $frame->Label(
 	-text => 'Allow Default Boot Module: ',
 	)->grid(
-	-row=>@r[0],
+	-row=>$r[0],
 	-column=>1,
 	-sticky=>"e",
 	);
 
-$nodeAllowDBMBool = $newCanvas->Checkbutton(
+my $nodeAllowDBMBool = $frame->Checkbutton(
 	)->grid(
-	-row=>@r[0],
+	-row=>$r[0],
 	-column=>2,
 	-sticky=>"w",
 	);
 splice(@r,0,1);
-$nodeIconText = $newCanvas->Label(
+my $nodeIconText = $frame->Label(
 	-text => 'Icon: ',
 	)->grid(
-	-row=>@r[0],
+	-row=>$r[0],
 	-column=>1,
 	-sticky=>"e",
 	);
 
-$nodeIconInput = $newCanvas->Entry(
+my $nodeIconInput = $frame->Entry(
 	-width => 20,
 	)->grid(
-	-row=>@r[0],
+	-row=>$r[0],
 	-column=>2,
 	-sticky=>'w',
 	);
 splice(@r,0,1);
-$nodeTypeText = $newCanvas->Label(
+my $nodeTypeText = $frame->Label(
 	-text => 'Type: ',
 	)->grid(
-	-row=>@r[0],
+	-row=>$r[0],
 	-column=>1,
 	-sticky=>"e",
 	);
 
-$nodeTypeInput = $newCanvas->Entry(
+my $nodeTypeInput = $frame->Entry(
 	-width => 20,
 	)->grid(
-	-row=>@r[0],
+	-row=>$r[0],
 	-column=>2,
 	-sticky=>'w',
 	);
 splice(@r,0,1);
-$nodePWText = $newCanvas->Label(
+my $nodePWText = $frame->Label(
 	-text => 'Admin Password: ',
 	)->grid(
-	-row=>@r[0],
+	-row=>$r[0],
 	-column=>1,
 	-sticky=>"e",
 	);
 
-$nodePWInput = $newCanvas->Entry(
+my $nodePWInput = $frame->Entry(
 	-width => 20,
 	)->grid(
-	-row=>@r[0],
+	-row=>$r[0],
 	-column=>2,
 	-sticky=>'w',
 	);
 splice(@r,0,1);
-$nodeAccountText = $newCanvas->Label(
+my $nodeAccountText = $frame->Label(
 	-text => 'Account: ',
 	)->grid(
-	-row=>@r[0],
+	-row=>$r[0],
 	-column=>1,
 	-sticky=>"e",
 	);
 
-$nodeAccountNewButton = $newCanvas->Button(
+my $nodeAccountNewButton = $frame->Button(
 	-text => 'New',
 	-width => 10,
 	)->grid(
-	-row=>@r[0],
+	-row=>$r[0],
 	-column=>2,
 	-sticky=>'w',
 	);
 splice(@r,0,1);
-$nodeMailAccountText = $newCanvas->Label(
+my $nodeMailAccountText = $frame->Label(
 	-text => 'Mail Account: ',
 	)->grid(
-	-row=>@r[0],
+	-row=>$r[0],
 	-column=>1,
 	-sticky=>"e",
 	);
 
-$nodeMailAccountNewButton = $newCanvas->Button(
+my $nodeMailAccountNewButton = $frame->Button(
 	-text => 'New',
 	-width => 10,
 	)->grid(
-	-row=>@r[0],
+	-row=>$r[0],
 	-column=>2,
 	-sticky=>'w',
 	);
 splice(@r,0,1);
-$nodeProxyTimeText = $newCanvas->Label(
+my $nodeProxyTimeText = $frame->Label(
 	-text => 'Proxy Time: ',
 	)->grid(
-	-row=>@r[0],
+	-row=>$r[0],
 	-column=>1,
 	-sticky=>"e",
 	);
 
-$nodeProxyTimeInput = $newCanvas->Spinbox(
+my $nodeProxyTimeInput = $frame->Spinbox(
 	-width => 2,
 	-from => -1,
 	-to => 99,
 	)->grid(
-	-row=>@r[0],
+	-row=>$r[0],
 	-column=>2,
 	-sticky=>'w',
 	);
 splice(@r,0,1);
-$nodePortsText = $newCanvas->Label(
+my $nodePortsText = $frame->Label(
 	-text => 'Ports: ',
 	)->grid(
-	-row=>@r[0],
+	-row=>$r[0],
 	-column=>1,
 	-sticky=>"e",
 	);
 
-$nodePortsInput = $newCanvas->Entry(
+my $nodePortsInput = $frame->Entry(
 	-width => 36,
 	-textvariable => '21, 22, 25, 80, 1433, 104, 6881, 443, 192, 554',
 	)->grid(
-	-row=>@r[0],
+	-row=>$r[0],
 	-column=>2,
 	-sticky=>'w',
 	);
 splice(@r,0,1);
-$nodePortsNeededText = $newCanvas->Label(
+my $nodePortsNeededText = $frame->Label(
 	-text => 'Ports For Crack: ',
 	)->grid(
-	-row=>@r[0],
+	-row=>$r[0],
 	-column=>1,
 	-sticky=>"e",
 	);
 
-$nodePortsNeededInput = $newCanvas->Spinbox(
+my $nodePortsNeededInput = $frame->Spinbox(
 	-width => 2,
 	-from => -1,
 	-to => 99,
 	)->grid(
-	-row=>@r[0],
+	-row=>$r[0],
 	-column=>2,
 	-sticky=>'w',
 	);
 splice(@r,0,1);
-$nodeTraceTimeText = $newCanvas->Label(
+my $nodeTraceTimeText = $frame->Label(
 	-text => 'Trace Time: ',
 	)->grid(
-	-row=>@r[0],
+	-row=>$r[0],
 	-column=>1,
 	-sticky=>"e",
 	);
 
-$nodeTraceTimeInput = $newCanvas->Entry(
+my $nodeTraceTimeInput = $frame->Entry(
 	-width => 20,
 	)->grid(
-	-row=>@r[0],
+	-row=>$r[0],
 	-column=>2,
 	-sticky=>'w',
 	);
 splice(@r,0,1);
-$nodePortRemapText = $newCanvas->Label(
+my $nodePortRemapText = $frame->Label(
 	-text => 'Port Remap: ',
 	)->grid(
-	-row=>@r[0],
+	-row=>$r[0],
 	-column=>1,
 	-sticky=>"e",
 	);
 
-$nodePortRemapInput = $newCanvas->Entry(
+my $nodePortRemapInput = $frame->Entry(
 	-width => 20,
 	-textvariable => "web=1234,22=2",
 	)->grid(
-	-row=>@r[0],
+	-row=>$r[0],
 	-column=>2,
 	-sticky=>'w',
 	);
 splice(@r,0,1);
-$nodeTrackerCheckbuttonText = $newCanvas->Label(
+my $nodeTrackerCheckbuttonText = $frame->Label(
 	-text => 'Tracker: ',
 	)->grid(
-	-row=>@r[0],
+	-row=>$r[0],
 	-column=>1,
 	-sticky=>"e",
 	);
 
-$nodeTrackerBool = $newCanvas->Checkbutton(
+my $nodeTrackerBool = $frame->Checkbutton(
 	)->grid(
-	-row=>@r[0],
+	-row=>$r[0],
 	-column=>2,
 	-sticky=>"w",
 	);
 splice(@r,0,1);
-$nodeDLinkText = $newCanvas->Label(
+my $nodeDLinkText = $frame->Label(
 	-text => 'DLink Target (Linked Computer): ',
 	)->grid(
-	-row=>@r[0],
+	-row=>$r[0],
 	-column=>1,
 	-sticky=>"e",
 	);
 
-$nodeDLinkInput = $newCanvas->Entry(
+my $nodeDLinkInput = $frame->Entry(
 	-width => 20,
 	-textvariable => "advExamplePC2",
 	)->grid(
-	-row=>@r[0],
+	-row=>$r[0],
 	-column=>2,
 	-sticky=>'w',
 	);
 splice(@r,0,1);
-$nodePositionText = $newCanvas->Label(
+my $nodePositionText = $frame->Label(
 	-text => 'Position Near: ',
 	)->grid(
-	-row=>@r[0],
+	-row=>$r[0],
 	-column=>1,
 	-sticky=>"e",
 	);
 
-$nodePositionNewButton = $newCanvas->Button(
+my $nodePositionNewButton = $frame->Button(
 	-text => 'New',
 	-width => 10,
 	)->grid(
-	-row=>@r[0],
+	-row=>$r[0],
 	-column=>2,
 	-sticky=>'w',
 	);
 splice(@r,0,1);
-$nodeFileText = $newCanvas->Label(
+my $nodeFileText = $frame->Label(
 	-text => 'File: ',
 	)->grid(
-	-row=>@r[0],
+	-row=>$r[0],
 	-column=>1,
 	-sticky=>"e",
 	);
 
-$nodeFileNewButton = $newCanvas->Button(
+my $nodeFileNewButton = $frame->Button(
 	-text => 'New',
 	-width => 10,
 	)->grid(
-	-row=>@r[0],
+	-row=>$r[0],
+	-column=>2,
+	-sticky=>'w',
+	);
+splice(@r,0,1);
+my $nodeCustomThemeText = $frame->Label(
+	-text => 'Custom Theme: ',
+	)->grid(
+	-row=>$r[0],
+	-column=>1,
+	-sticky=>"e",
+	);
+
+my $nodeCustomThemeNewButton = $frame->Button(
+	-text => 'New',
+	-width => 10,
+	)->grid(
+	-row=>$r[0],
+	-column=>2,
+	-sticky=>'w',
+	);
+splice(@r,0,1);
+my $nodeDECFileText = $frame->Label(
+	-text => 'Encrypted File: ',
+	)->grid(
+	-row=>$r[0],
+	-column=>1,
+	-sticky=>"e",
+	);
+
+my $nodeDECFileNewButton = $frame->Button(
+	-text => 'New',
+	-width => 10,
+	)->grid(
+	-row=>$r[0],
+	-column=>2,
+	-sticky=>'w',
+	);
+splice(@r,0,1);
+my $nodeEOSDeviceText = $frame->Label(
+	-text => 'EOS Device: ',
+	)->grid(
+	-row=>$r[0],
+	-column=>1,
+	-sticky=>"e",
+	);
+
+my $nodeEOSDeviceNewButton = $frame->Button(
+	-text => 'New',
+	-width => 10,
+	)->grid(
+	-row=>$r[0],
+	-column=>2,
+	-sticky=>'w',
+	);
+splice(@r,0,1);
+my $nodeMailServerText = $frame->Label(
+	-text => 'Mail Server: ',
+	)->grid(
+	-row=>$r[0],
+	-column=>1,
+	-sticky=>"e",
+	);
+
+my $nodeMailServerNewButton = $frame->Button(
+	-text => 'New',
+	-width => 10,
+	)->grid(
+	-row=>$r[0],
+	-column=>2,
+	-sticky=>'w',
+	);
+splice(@r,0,1);
+my $nodeUploadServerDaemonText = $frame->Label(
+	-text => 'Upload Server Daemon: ',
+	)->grid(
+	-row=>$r[0],
+	-column=>1,
+	-sticky=>"e",
+	);
+
+my $nodeUploadServerDaemonNewButton = $frame->Button(
+	-text => 'New',
+	-width => 10,
+	)->grid(
+	-row=>$r[0],
+	-column=>2,
+	-sticky=>'w',
+	);
+splice(@r,0,1);
+my $nodeWebServerText = $frame->Label(
+	-text => 'Web Server: ',
+	)->grid(
+	-row=>$r[0],
+	-column=>1,
+	-sticky=>"e",
+	);
+
+my $nodeWebServerNewButton = $frame->Button(
+	-text => 'New',
+	-width => 10,
+	)->grid(
+	-row=>$r[0],
+	-column=>2,
+	-sticky=>'w',
+	);
+splice(@r,0,1);
+my $nodeDeathRowDatabaseText = $frame->Label(
+	-text => 'DeathRow Database: ',
+	)->grid(
+	-row=>$r[0],
+	-column=>1,
+	-sticky=>"e",
+	);
+
+my $nodeDeathRowDatabaseBool = $frame->Checkbutton(
+	)->grid(
+	-row=>$r[0],
+	-column=>2,
+	-sticky=>"w",
+	);
+splice(@r,0,1);
+my $nodeAcademicDatabaseText = $frame->Label(
+	-text => 'Academic Database: ',
+	)->grid(
+	-row=>$r[0],
+	-column=>1,
+	-sticky=>"e",
+	);
+
+my $nodeAcademicDatabaseBool = $frame->Checkbutton(
+	)->grid(
+	-row=>$r[0],
+	-column=>2,
+	-sticky=>"w",
+	);
+splice(@r,0,1);
+my $nodeMedicalDatabaseText = $frame->Label(
+	-text => 'Medical Database: ',
+	)->grid(
+	-row=>$r[0],
+	-column=>1,
+	-sticky=>"e",
+	);
+
+my $nodeMedicalDatabaseBool = $frame->Checkbutton(
+	)->grid(
+	-row=>$r[0],
+	-column=>2,
+	-sticky=>"w",
+	);
+splice(@r,0,1);
+my $nodeISPSystemText = $frame->Label(
+	-text => 'ISP System: ',
+	)->grid(
+	-row=>$r[0],
+	-column=>1,
+	-sticky=>"e",
+	);
+
+my $nodeISPSystemBool = $frame->Checkbutton(
+	)->grid(
+	-row=>$r[0],
+	-column=>2,
+	-sticky=>"w",
+	);
+splice(@r,0,1);
+my $nodeMessageBoardText = $frame->Label(
+	-text => 'Message Board: ',
+	)->grid(
+	-row=>$r[0],
+	-column=>1,
+	-sticky=>"e",
+	);
+
+my $nodeMessageBoardNewButton = $frame->Button(
+	-text => 'New',
+	-width => 10,
+	)->grid(
+	-row=>$r[0],
+	-column=>2,
+	-sticky=>'w',
+	);
+splice(@r,0,1);
+my $nodeHeartMonitorText = $frame->Label(
+	-text => 'Heart Monitor: ',
+	)->grid(
+	-row=>$r[0],
+	-column=>1,
+	-sticky=>"e",
+	);
+
+my $nodeHeartMonitorNewButton = $frame->Button(
+	-text => 'New',
+	-width => 10,
+	)->grid(
+	-row=>$r[0],
+	-column=>2,
+	-sticky=>'w',
+	);
+splice(@r,0,1);
+my $nodePointClickerText = $frame->Label(
+	-text => 'PointClicker Database: ',
+	)->grid(
+	-row=>$r[0],
+	-column=>1,
+	-sticky=>"e",
+	);
+
+my $nodePointClickerBool = $frame->Checkbutton(
+	)->grid(
+	-row=>$r[0],
 	-column=>2,
 	-sticky=>'w',
 	);
@@ -366,31 +583,23 @@ $nodeFileNewButton = $newCanvas->Button(
 
 
 
-
-
-
-
-
-
-
-
-
-
-
-$generateButton = $mw->Button(
+splice(@r,0,1);
+my $generateButton = $frame->Button(
     -text    => 'Generate XML',
     -command => sub { exit },
     )->grid(
-	-row=>19,
+	-row=>$r[0],
 	-column=>1,
+	-columnspan=>3,
 	);
-
-$quitButton = $mw->Button(
+splice(@r,0,1);
+my $quitButton = $frame->Button(
     -text    => 'Quit',
     -command => sub { exit },
     )->grid(
-	-row=>20,
+	-row=>$r[0],
 	-column=>1,
+	-columnspan=>3,
 	);
 
 MainLoop;
