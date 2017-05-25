@@ -1135,7 +1135,7 @@ sub genXML{
  	print OUTFILE "\t".'<portRemap>'.$nodePortRemapEntry->get.'</portRemap>'."\n";
 
  	for (my $i = 0; $i < scalar(@nodeAccounts); $i += 3) {
- 		print OUTFILE "\t".'<account username="'.$nodeAccounts[0].'" password="'.$nodeAccounts[1].'" type="'.$nodeAccounts[2].'" />'."\n";
+ 		print OUTFILE "\t".'<account username="'.$nodeAccounts[$i].'" password="'.$nodeAccounts[$i+1].'" type="'.$nodeAccounts[$i+2].'" />'."\n";
 	}
 
  	#if(trackerBool){print OUTFILE "\t".'<tracker />'."\n";}else{print OUTFILE "\t".'<!--<tracker />-->'."\n";}
