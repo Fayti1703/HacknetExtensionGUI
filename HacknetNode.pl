@@ -4,6 +4,7 @@ use Tk;
 use warnings;
 use strict;
 use diagnostics;
+use Try::Tiny;
 require Tk::Pane;
 require Tk::HList;
 
@@ -39,8 +40,7 @@ my $nodeFileContentsEntry;
 my $nodeAccountsHList;
 
 my @r;
-my @nodeAccounts;
-
+my @nodeAccounts = ();
 
 for my $i(1..$rows){
 	push @r, $i;
@@ -830,13 +830,13 @@ my $quitButton = $frame->Button(
 	);
 ################################################################################################################################################################
 ################################################################################################################################################################
-sub createAddOKButtons(){
-	my $window = $_[0];
-	my @nodeList = @{$_[1]};
-	my $nodeHList = $_[2];
+sub createAddOKButtons{
+	my $window = shift;
+	my $nodeHList = shift;
+	my @list = @_;	
 	my $addButton = $window->Button(
 	    -text => 'Add',
-	    -command => sub {&addPressed($window, \@nodeList, $nodeHList)},
+	    -command => sub {&addPressed($window, $nodeHList, @list)},
 	    )->grid(
 		-row=>4,
 		-column=>1,
@@ -844,53 +844,76 @@ sub createAddOKButtons(){
 		);
 	my $okButton = $window->Button(
 	    -text => 'OK',
-	    -command => sub {@{$_[1]} = &okPressed($window, \@nodeList)},
+	    -command => sub {&okPressed($window, $nodeHList, @list)},
 	    )->grid(
 		-row=>5,
 		-column=>1,
 		-columnspan=>2,
 		);
 }
-sub addPressed(){
-	my $window = $_[0];
-	my @nodeList = @{$_[1]};
-	my $nodeHList = $_[2];
-	&addRecord($window, \@nodeList, $nodeHList);
+
+sub addPressed{
+	my $window = shift;
+	my $nodeHList = shift;
+	my @list = @_;	
+	&addRecord($window, $nodeHList, @list);
 }
-sub okPressed(){
-	my $window = $_[0];
-	my @nodeList = @{$_[1]};
+
+sub okPressed{
+	my $window = shift;
+	my $nodeHList = shift;
+	my @list = @_;
 	$window->destroy;
-	return @nodeList;
 }
+
 sub addRecord{
-	my $window = $_[0];
-	my @list = @{$_[1]};
-	my $listLength = scalar(@list)/3;
-	my $nodeHList = $_[2];
+	my $window = shift;
+	my $nodeHList = shift;
+	my @list = @_;
+	my @tempList;	
 	my @children = $window->children;
+
 	foreach my $widget (@children) {
 		if($widget->isa('Tk::Entry')){
-			push @list, $widget->get;
+			my $entry = $widget->get;
+			if($entry ne ""){ 
+				push @tempList, $entry;
+			}		
 		}
 	}
-
-	$nodeHList->add($list[$listLength]);
-	$nodeHList->itemCreate($list[$listLength], 0, -text=>$list[0]);
-	$nodeHList->itemCreate($list[$listLength], 1, -text=>$list[1]);
-	$nodeHList->itemCreate($list[$listLength], 2, -text=>$list[2]);
+	if(scalar(@tempList)%3 == 0 and scalar(@tempList) > 2){
+		if($window->title eq "New Account"){
+			push @nodeAccounts, @tempList;
+		}
+		my $length = scalar(@list)/3;
+		$nodeHList->add($tempList[$length]);
+		$nodeHList->itemCreate($tempList[$length], 0, -text=>$tempList[0]);
+		$nodeHList->itemCreate($tempList[$length], 1, -text=>$tempList[1]);
+		$nodeHList->itemCreate($tempList[$length], 2, -text=>$tempList[2]);
+	}
 }
 
 sub showRecords{
-	my $window = $_[0];
-	my @list = @{$_[1]};
-	my $listLength = scalar(@list)/3;
-	my $HList = $_[2];
-	print @{$_[1]}."\n";
-	#foreach my $node (@nodeList){
-	#	$nodeHList->add($node);
-	#	$nodeHList->itemCreate($node, 0, -text=>$node);
-	#}
+	my $window = shift;
+	my $nodeHList = shift;
+	my @list = @_;
+	my $i = 0;
+	my $j = 0;
+	my $count = 1;
+	foreach my $record(@list){
+		
+		if($count%3 eq 0){
+			$nodeHList->add($list[$i]);
+			$nodeHList->itemCreate($list[$i], 0, -text=>$list[$j]);
+			$j++;
+			$nodeHList->itemCreate($list[$i], 1, -text=>$list[$j]);
+			$j++;
+			$nodeHList->itemCreate($list[$i], 2, -text=>$list[$j]);
+			$j++;
+			$i++;
+		}
+		$count++;
+	}
 }
 
 sub newAccount{
@@ -947,7 +970,7 @@ sub newAccount{
 		-columns => 4,
 		-header => -1,
 		-width => 100,
-		-command => sub{&deleteRecord($nodeAccountsHList)},
+		-command => sub{&deleteRecord($newAccountWindow, $nodeAccountsHList, @nodeAccounts)},
 		)->grid(
 		-row=>1,
 		-column=>3,
@@ -959,18 +982,21 @@ sub newAccount{
 	$nodeAccountsHList->headerCreate(1, -text => "Password",);
 	$nodeAccountsHList->headerCreate(2, -text => "Type",);
 
-	&createAddOKButtons($newAccountWindow, \@nodeAccounts, $nodeAccountsHList);
+	&createAddOKButtons($newAccountWindow, $nodeAccountsHList, @nodeAccounts);
 
-	&showRecords($newAccountWindow, \@nodeAccounts, $nodeAccountsHList);
-
+	&showRecords($newAccountWindow, $nodeAccountsHList, @nodeAccounts);
 }
 
 sub deleteRecord{
-	my $nodeHList = $_[0];
-	my $path;
-	$path=$nodeHList->selectionGet;
+	my $window = shift;
+	my $nodeHList = shift;
+	my @list = @_;
+	my $path=$nodeHList->selectionGet;
 	$nodeHList->delete('entry', $path);
-	##NEEDS TO DELETE FROM ARRAY
+	splice (@list,@$path,3);
+	if($window->title eq "New Account"){
+		@nodeAccounts = @list;
+	}
 }
 
 sub newFirewall{
@@ -1108,9 +1134,9 @@ sub genXML{
 
  	print OUTFILE "\t".'<portRemap>'.$nodePortRemapEntry->get.'</portRemap>'."\n";
 
- 	#for (my $i = 0; $i < scalar(@nodeAccounts); $i += 3) {
+ 	for (my $i = 0; $i < scalar(@nodeAccounts); $i += 3) {
  		print OUTFILE "\t".'<account username="'.$nodeAccounts[0].'" password="'.$nodeAccounts[1].'" type="'.$nodeAccounts[2].'" />'."\n";
-	#}
+	}
 
  	#if(trackerBool){print OUTFILE "\t".'<tracker />'."\n";}else{print OUTFILE "\t".'<!--<tracker />-->'."\n";}
 
