@@ -12,35 +12,36 @@ package main;
 my $mw = MainWindow->new();
 	$mw->geometry( "1000x900" );
 	$mw->optionAdd('*font' => 'fixed');
-my $rows = 100;
-my $allowDBMBool = "false";
-my $trackerBool = 0;
-my $deathRowDatabaseBool = 0;
-my $academicDatabaseBool = 0;
-my $ispSystemBool = 0;
-my $medicalDatabaseBool = 0;
-my $newAccountUsernameText;
-my $newAccountUsernameEntry;
-my $nodeAccountPasswordText;
-my $nodeAccountPasswordEntry;
-my $nodeAccountTypeText;
-my $nodeAccountTypeEntry;
-my $newFirewallLevelText;
-my $newFirewallLevelEntry;
-my $nodeFirewallSolutionText;
-my $nodeFirewallSolutionEntry;
-my $nodeFirewallTimeText;
-my $nodeFirewallTimeEntry;
-my $newFilePathText;
-my $newFilePathEntry;
-my $nodeFileNameText;
-my $nodeFileNameEntry;
-my $nodeFileContentsText;
-my $nodeFileContentsEntry;
-my $nodeAccountsHList;
 
+my $newWindowSize = "1000x700+500+100";
+my $newHListWidth = 100;
+my $newHListHeight = 30;
+
+
+my $bAllowDBM = "false";
+my $bTracker = 0;
+my $bDeathRowDatabase = 0;
+my $bAcademicDatabase = 0;
+my $bISPSystem = 0;
+my $bMedicalDatabase = 0;
+my $bResetPassword = "false";
+my $bIsSuper = "false";
+
+my $nodeAccountsHList;
+my $nodeFirewallsHList;
+my $nodeFilesHList;
+my $nodeAdminTypesHList;
+my $nodeDLinksHList;
+my $nodeCustomThemeFilesHList;
+
+my $rows = 200;
 my @r;
 my @nodeAccounts = ();
+my @nodeFirewalls = ();
+my @nodeFiles = ();
+my @nodeAdminTypes = ();
+my @nodeDLinks = ();
+my @nodeCustomThemeFiles = ();
 
 for my $i(1..$rows){
 	push @r, $i;
@@ -139,7 +140,7 @@ my $nodeAllowDBMCheckbuttonText = $frame->Label(
 my $nodeAllowDBMCheckbutton = $frame->Checkbutton(
 	-offvalue =>"false",
 	-onvalue =>"true",
-	-variable => \$allowDBMBool,
+	-variable => \$bAllowDBM,
 	)->grid(
 	-row=>$r[0],
 	-column=>2,
@@ -188,6 +189,24 @@ my $nodePWText = $frame->Label(
 
 my $nodePWEntry = $frame->Entry(
 	-width => 20,
+	)->grid(
+	-row=>$r[0],
+	-column=>2,
+	-sticky=>'w',
+	);
+splice(@r,0,1);
+my $nodeAdminTypeText = $frame->Label(
+	-text => 'Admin Type: ',
+	)->grid(
+	-row=>$r[0],
+	-column=>1,
+	-sticky=>"e",
+	);
+
+my $nodeAdminTypeEntry = $frame->Button(
+	-text => 'New',
+	-command=> sub { &newAdminType() },
+	-state => "disabled",
 	)->grid(
 	-row=>$r[0],
 	-column=>2,
@@ -323,7 +342,8 @@ my $nodeTrackerCheckbuttonText = $frame->Label(
 	);
 
 my $nodeTrackerCheckbutton = $frame->Checkbutton(
-	-variable => \$trackerBool,
+	-variable => \$bTracker,
+	-state => "disabled",
 	)->grid(
 	-row=>$r[0],
 	-column=>2,
@@ -340,6 +360,7 @@ my $nodeDLinkText = $frame->Label(
 
 my $nodeDLinkEntry = $frame->Button(
 	-text => "New",
+	-command => sub{&newDLink()},
 	)->grid(
 	-row=>$r[0],
 	-column=>2,
@@ -356,6 +377,7 @@ my $nodePositionText = $frame->Label(
 
 my $nodePositionNewButton = $frame->Button(
 	-text => 'New',
+	-state => "disabled",
 	)->grid(
 	-row=>$r[0],
 	-column=>2,
@@ -379,7 +401,7 @@ my $nodeFileNewButton = $frame->Button(
 	-sticky=>'w',
 	);
 splice(@r,0,1);
-my $nodeCustomThemeText = $frame->Label(
+my $nodeCustomThemeFileText = $frame->Label(
 	-text => 'Custom Theme: ',
 	)->grid(
 	-row=>$r[0],
@@ -387,8 +409,9 @@ my $nodeCustomThemeText = $frame->Label(
 	-sticky=>"e",
 	);
 
-my $nodeCustomThemeNewButton = $frame->Button(
+my $nodeCustomThemeFileNewButton = $frame->Button(
 	-text => 'New',
+	-command => sub{&newCustomThemeFile()}
 	)->grid(
 	-row=>$r[0],
 	-column=>2,
@@ -405,6 +428,7 @@ my $nodeDECFileText = $frame->Label(
 
 my $nodeDECFileNewButton = $frame->Button(
 	-text => 'New',
+	-state => "disabled",
 	)->grid(
 	-row=>$r[0],
 	-column=>2,
@@ -421,6 +445,7 @@ my $nodeEOSDeviceText = $frame->Label(
 
 my $nodeEOSDeviceNewButton = $frame->Button(
 	-text => 'New',
+	-state => "disabled",
 	)->grid(
 	-row=>$r[0],
 	-column=>2,
@@ -437,6 +462,7 @@ my $nodeMailServerText = $frame->Label(
 
 my $nodeMailServerNewButton = $frame->Button(
 	-text => 'New',
+	-state => "disabled",
 	)->grid(
 	-row=>$r[0],
 	-column=>2,
@@ -453,6 +479,7 @@ my $nodeUploadServerDaemonText = $frame->Label(
 
 my $nodeUploadServerDaemonNewButton = $frame->Button(
 	-text => 'New',
+	-state => "disabled",
 	)->grid(
 	-row=>$r[0],
 	-column=>2,
@@ -469,6 +496,7 @@ my $nodeWebServerText = $frame->Label(
 
 my $nodeWebServerNewButton = $frame->Button(
 	-text => 'New',
+	-state => "disabled",
 	)->grid(
 	-row=>$r[0],
 	-column=>2,
@@ -484,7 +512,8 @@ my $nodeDeathRowDatabaseText = $frame->Label(
 	);
 
 my $nodeDeathRowDatabaseCheckbutton = $frame->Checkbutton(
-	-variable => \$deathRowDatabaseBool,
+	-variable => \$bDeathRowDatabase,
+	-state => "disabled",
 	)->grid(
 	-row=>$r[0],
 	-column=>2,
@@ -500,7 +529,8 @@ my $nodeAcademicDatabaseText = $frame->Label(
 	);
 
 my $nodeAcademicDatabaseCheckbutton = $frame->Checkbutton(
-	-variable => \$academicDatabaseBool,
+	-variable => \$bAcademicDatabase,
+	-state => "disabled",
 	)->grid(
 	-row=>$r[0],
 	-column=>2,
@@ -516,7 +546,8 @@ my $nodeMedicalDatabaseText = $frame->Label(
 	);
 
 my $nodeMedicalDatabaseCheckbutton = $frame->Checkbutton(
-	-variable => \$medicalDatabaseBool,
+	-variable => \$bMedicalDatabase,
+	-state => "disabled",
 	)->grid(
 	-row=>$r[0],
 	-column=>2,
@@ -532,7 +563,8 @@ my $nodeISPSystemText = $frame->Label(
 	);
 
 my $nodeISPSystemCheckbutton = $frame->Checkbutton(
-	-variable => \$ispSystemBool,
+	-variable => \$bISPSystem,
+	-state => "disabled",
 	)->grid(
 	-row=>$r[0],
 	-column=>2,
@@ -549,6 +581,7 @@ my $nodeMessageBoardText = $frame->Label(
 
 my $nodeMessageBoardNewButton = $frame->Button(
 	-text => 'New',
+	-state => "disabled",
 	)->grid(
 	-row=>$r[0],
 	-column=>2,
@@ -565,6 +598,7 @@ my $nodeHeartMonitorText = $frame->Label(
 
 my $nodeHeartMonitorNewButton = $frame->Button(
 	-text => 'New',
+	-state => "disabled",
 	)->grid(
 	-row=>$r[0],
 	-column=>2,
@@ -580,6 +614,7 @@ my $nodePointClickerText = $frame->Label(
 	);
 
 my $nodePointClickerCheckbutton = $frame->Checkbutton(
+	-state => "disabled",
 	)->grid(
 	-row=>$r[0],
 	-column=>2,
@@ -595,6 +630,7 @@ my $nodePSongChangerDaemonText = $frame->Label(
 	);
 
 my $nodeSongChangerDaemonCheckbutton = $frame->Checkbutton(
+	-state => "disabled",
 	)->grid(
 	-row=>$r[0],
 	-column=>2,
@@ -611,6 +647,7 @@ my $nodeMissionListingServerText = $frame->Label(
 
 my $nodeMissionListingServerNewButton = $frame->Button(
 	-text => 'New',
+	-state => "disabled",
 	)->grid(
 	-row=>$r[0],
 	-column=>2,
@@ -627,6 +664,7 @@ my $nodeMissionHubServerText = $frame->Label(
 
 my $nodeMissionHubServerNewButton = $frame->Button(
 	-text => 'New',
+	-state => "disabled",
 	)->grid(
 	-row=>$r[0],
 	-column=>2,
@@ -643,6 +681,7 @@ my $nodeCreditsDaemonText = $frame->Label(
 
 my $nodeCreditsDaemonNewButton = $frame->Button(
 	-text => 'New',
+	-state => "disabled",
 	)->grid(
 	-row=>$r[0],
 	-column=>2,
@@ -659,6 +698,7 @@ my $nodeMemoryDumpFileText = $frame->Label(
 
 my $nodeMemoryDumpFileNewButton = $frame->Button(
 	-text => 'New',
+	-state => "disabled",
 	)->grid(
 	-row=>$r[0],
 	-column=>2,
@@ -675,6 +715,7 @@ my $nodeMemoryText = $frame->Label(
 
 my $nodeMemoryNewButton = $frame->Button(
 	-text => 'New',
+	-state => "disabled",
 	)->grid(
 	-row=>$r[0],
 	-column=>2,
@@ -691,6 +732,7 @@ my $nodeDHSDaemonText = $frame->Label(
 
 my $nodeDHSDaemonNewButton = $frame->Button(
 	-text => 'New',
+	-state => "disabled",
 	)->grid(
 	-row=>$r[0],
 	-column=>2,
@@ -707,6 +749,7 @@ my $nodeCustomConnectDisplayDaemonText = $frame->Label(
 
 my $nodeCustomConnectDisplayDaemonNewButton = $frame->Button(
 	-text => 'New',
+	-state => "disabled",
 	)->grid(
 	-row=>$r[0],
 	-column=>2,
@@ -723,6 +766,7 @@ my $nodeLogoDaemonText = $frame->Label(
 
 my $nodeLogoDaemonNewButton = $frame->Button(
 	-text => 'New',
+	-state => "disabled",
 	)->grid(
 	-row=>$r[0],
 	-column=>2,
@@ -739,6 +783,7 @@ my $nodeLogoCustomConnectDisplayDaemonText = $frame->Label(
 
 my $nodeLogoCustomConnectDisplayDaemonNewButton = $frame->Button(
 	-text => 'New',
+	-state => "disabled",
 	)->grid(
 	-row=>$r[0],
 	-column=>2,
@@ -755,6 +800,7 @@ my $nodeDatabaseDaemonText = $frame->Label(
 
 my $nodeDatabaseDaemonNewButton = $frame->Button(
 	-text => 'New',
+	-state => "disabled",
 	)->grid(
 	-row=>$r[0],
 	-column=>2,
@@ -771,6 +817,7 @@ my $nodeWhitelistAuthenticatorDaemonText = $frame->Label(
 
 my $nodeWhitelistAuthenticatorDaemonNewButton = $frame->Button(
 	-text => 'New',
+	-state => "disabled",
 	)->grid(
 	-row=>$r[0],
 	-column=>2,
@@ -787,6 +834,7 @@ my $nodeMarkovTextDaemonText = $frame->Label(
 
 my $nodeMarkovTextDaemonNewButton = $frame->Button(
 	-text => 'New',
+	-state => "disabled",
 	)->grid(
 	-row=>$r[0],
 	-column=>2,
@@ -803,6 +851,7 @@ my $nodeIRCDaemonText = $frame->Label(
 
 my $nodeIRCDaemonNewButton = $frame->Button(
 	-text => 'New',
+	-state => "disabled",
 	)->grid(
 	-row=>$r[0],
 	-column=>2,
@@ -837,6 +886,8 @@ sub createAddOKButtons{
 	my $addButton = $window->Button(
 	    -text => 'Add',
 	    -command => sub {&addPressed($window, $nodeHList, @list)},
+	    -width => 20,
+	    -height => 3,
 	    )->grid(
 		-row=>4,
 		-column=>1,
@@ -845,6 +896,8 @@ sub createAddOKButtons{
 	my $okButton = $window->Button(
 	    -text => 'OK',
 	    -command => sub {&okPressed($window, $nodeHList, @list)},
+	    -width => 20,
+	    -height => 3,
 	    )->grid(
 		-row=>5,
 		-column=>1,
@@ -866,11 +919,47 @@ sub okPressed{
 	$window->destroy;
 }
 
+sub deleteRecord{
+	my $window = shift;
+	my $nodeHList = shift;
+	my @list = @_;
+	my $pathRef = $nodeHList->selectionGet;
+	my $path = @$pathRef;
+
+	if($window->title ne "New DLink"){
+		splice (@list,$path-1,3);
+	}else{
+		splice (@list,$path-1,1);
+	}
+
+	
+	$nodeHList->delete('entry', $pathRef);
+
+	if($window->title eq "New Account"){
+		@nodeAccounts = @list;
+	}
+	if($window->title eq "New Firewall"){
+		@nodeFirewalls = @list;
+	}
+	if($window->title eq "New File"){
+		@nodeFiles = @list;
+	}
+	if($window->title eq "New Admin Type"){
+		@nodeAdminTypes = @list;
+	}
+	if($window->title eq "New DLink"){
+		@nodeDLinks = @list;
+	}
+	if($window->title eq "New Custom Theme File"){
+		@nodeCustomThemeFiles = @list;
+	}
+}
+
 sub addRecord{
 	my $window = shift;
 	my $nodeHList = shift;
 	my @list = @_;
-	my @tempList;	
+	my @tempList = ();
 	my @children = $window->children;
 
 	foreach my $widget (@children) {
@@ -880,16 +969,54 @@ sub addRecord{
 				push @tempList, $entry;
 			}		
 		}
-	}
-	if(scalar(@tempList)%3 == 0 and scalar(@tempList) > 2){
-		if($window->title eq "New Account"){
-			push @nodeAccounts, @tempList;
+		if($widget->isa('Tk::Checkbutton')){
+			my $entry = $widget->get;
+			if($entry ne ""){ 
+				push @tempList, $entry;
+			}		
 		}
-		my $length = scalar(@list)/3;
-		$nodeHList->add($tempList[$length]);
-		$nodeHList->itemCreate($tempList[$length], 0, -text=>$tempList[0]);
-		$nodeHList->itemCreate($tempList[$length], 1, -text=>$tempList[1]);
-		$nodeHList->itemCreate($tempList[$length], 2, -text=>$tempList[2]);
+	}
+
+	if($window->title eq "New DLink"){
+		if(scalar(@tempList) > 0){
+			my $length = scalar(@list);
+			if($nodeHList->infoExists($length)){
+				$length++;
+			}
+			$nodeHList->add($tempList[$length]);
+			$nodeHList->itemCreate($tempList[$length], 0, -text=>$tempList[0]);
+			push @nodeDLinks, @tempList;
+		}
+	}else{
+		if(scalar(@tempList)%3 == 0 and scalar(@tempList) > 2){
+			my $length = scalar(@list)/3;
+			if($nodeHList->infoExists($length)){
+				$length++;
+			}
+			if($window->title eq "New Admin Type" and $length>2){
+				return;
+			}
+			$nodeHList->add($tempList[$length]);
+			$nodeHList->itemCreate($tempList[$length], 0, -text=>$tempList[0]);
+			$nodeHList->itemCreate($tempList[$length], 1, -text=>$tempList[1]);
+			$nodeHList->itemCreate($tempList[$length], 2, -text=>$tempList[2]);
+
+			if($window->title eq "New Account"){
+				push @nodeAccounts, @tempList;
+			}
+			if($window->title eq "New Firewall"){
+				push @nodeFirewalls, @tempList;
+			}
+			if($window->title eq "New File"){
+				push @nodeFiles, @tempList;
+			}
+			if($window->title eq "New Admin Type"){
+				push @nodeAdminTypes, @tempList;
+			}
+			if($window->title eq "New Custom Theme File"){
+				push @nodeCustomThemeFiles, @tempList;
+			}
+		}		
 	}
 }
 
@@ -897,35 +1024,41 @@ sub showRecords{
 	my $window = shift;
 	my $nodeHList = shift;
 	my @list = @_;
-	my $i = 0;
-	my $j = 0;
-	my $count = 1;
-	foreach my $record(@list){
-		
-		if($count%3 eq 0){
-			$nodeHList->add($list[$i]);
-			$nodeHList->itemCreate($list[$i], 0, -text=>$list[$j]);
-			$j++;
-			$nodeHList->itemCreate($list[$i], 1, -text=>$list[$j]);
-			$j++;
-			$nodeHList->itemCreate($list[$i], 2, -text=>$list[$j]);
-			$j++;
-			$i++;
+	my $length = 0;
+	my $bPathCheck = $nodeHList->infoExists($length);
+	if($window->title eq "New DLink"){
+		for(my $i=0;$i<scalar(@list);$i++){
+			$nodeHList->add($list[$length]);
+			$nodeHList->itemCreate($list[$length], 0, -text=>$list[$i]);
+			$length++;
 		}
-		$count++;
+	}else{
+		for(my $i=0;$i<scalar(@list);$i+=3){
+			$nodeHList->add($list[$length]);
+			$nodeHList->itemCreate($list[$length], 0, -text=>$list[$i]);
+			$nodeHList->itemCreate($list[$length], 1, -text=>$list[$i+1]);
+			$nodeHList->itemCreate($list[$length], 2, -text=>$list[$i+2]);
+			$length++;
+		}
 	}
 }
 
 sub newAccount{
+	my $newAccountUsernameText;
+	my $newAccountUsernameEntry;
+	my $nodeAccountPasswordText;
+	my $nodeAccountPasswordEntry;
+	my $nodeAccountTypeText;
+	my $nodeAccountTypeEntry;
 	my $newAccountWindow = MainWindow->new(-title=>"New Account");
-	$newAccountWindow->geometry( "1000x300+500+300" );
+	$newAccountWindow->geometry($newWindowSize);
 	$newAccountWindow->focusForce;
 	$newAccountUsernameText = $newAccountWindow->Label(
 		-text => 'Username: ',
 		)->grid(
 		-row=>1,
 		-column=>1,
-		-sticky=>"e",
+		-sticky=>"se",
 		);
 
 	$newAccountUsernameEntry = $newAccountWindow->Entry(
@@ -933,7 +1066,7 @@ sub newAccount{
 		)->grid(
 		-row=>1,
 		-column=>2,
-		-sticky=>'w',
+		-sticky=>'sw',
 		);
 	$nodeAccountPasswordText = $newAccountWindow->Label(
 		-text => 'Password: ',
@@ -955,7 +1088,7 @@ sub newAccount{
 		)->grid(
 		-row=>3,
 		-column=>1,
-		-sticky=>"e",
+		-sticky=>"ne",
 		);
 
 	$nodeAccountTypeEntry = $newAccountWindow->Entry(
@@ -963,13 +1096,14 @@ sub newAccount{
 		)->grid(
 		-row=>3,
 		-column=>2,
-		-sticky=>'w',
+		-sticky=>'nw',
 		);
 
 	$nodeAccountsHList = $newAccountWindow->HList(
 		-columns => 4,
 		-header => -1,
-		-width => 100,
+		-width => $newHListWidth,
+		-height => $newHListHeight,
 		-command => sub{&deleteRecord($newAccountWindow, $nodeAccountsHList, @nodeAccounts)},
 		)->grid(
 		-row=>1,
@@ -987,58 +1121,35 @@ sub newAccount{
 	&showRecords($newAccountWindow, $nodeAccountsHList, @nodeAccounts);
 }
 
-sub deleteRecord{
-	my $window = shift;
-	my $nodeHList = shift;
-	my @list = @_;
-	my $path=$nodeHList->selectionGet;
-	$nodeHList->delete('entry', $path);
-	splice (@list,@$path,3);
-	if($window->title eq "New Account"){
-		@nodeAccounts = @list;
-	}
-}
-
 sub newFirewall{
+	my $nodeFirewallSolutionText;
+	my $nodeFirewallSolutionEntry;
+	my $nodeFirewallTimeText;
+	my $nodeFirewallTimeEntry;
+	my $newFirewallLevelText;
+	my $newFirewallLevelEntry;
 	my $newFirewallWindow = MainWindow->new(-title=>"New Firewall");
-	$newFirewallWindow->geometry( "400x200+500+400" );
+	$newFirewallWindow->geometry($newWindowSize);
 	$newFirewallWindow->focusForce;
-	$newFirewallLevelText = $newFirewallWindow->Label(
-		-text => 'Level: ',
-		)->grid(
-		-row=>1,
-		-column=>1,
-		-sticky=>"e",
-		);
-
-	$newFirewallLevelEntry = $newFirewallWindow->Spinbox(
-		-width=>3,
-		-from=>0,
-		-to=>99,
-		)->grid(
-		-row=>1,
-		-column=>2,
-		-sticky=>'w',
-		);
 	$nodeFirewallSolutionText = $newFirewallWindow->Label(
 		-text => 'Solution: ',
 		)->grid(
-		-row=>2,
+		-row=>1,
 		-column=>1,
-		-sticky=>"e",
+		-sticky=>"se",
 		);
 
 	$nodeFirewallSolutionEntry = $newFirewallWindow->Entry(
 		-width => 20,
 		)->grid(
-		-row=>2,
+		-row=>1,
 		-column=>2,
-		-sticky=>'w',
+		-sticky=>'sw',
 		);
 	$nodeFirewallTimeText = $newFirewallWindow->Label(
 		-text => 'Additional Time: ',
 		)->grid(
-		-row=>3,
+		-row=>2,
 		-column=>1,
 		-sticky=>"e",
 		);
@@ -1046,24 +1157,67 @@ sub newFirewall{
 	$nodeFirewallTimeEntry = $newFirewallWindow->Entry(
 		-width => 20,
 		)->grid(
-		-row=>3,
+		-row=>2,
 		-column=>2,
 		-sticky=>'w',
 		);
+	
+	$newFirewallLevelText = $newFirewallWindow->Label(
+		-text => 'Level: ',
+		)->grid(
+		-row=>3,
+		-column=>1,
+		-sticky=>"ne",
+		);
 
-	#&createAddOKButtons($newFirewallWindow);
+	$newFirewallLevelEntry = $newFirewallWindow->Spinbox(
+		-width=>3,
+		-from=>0,
+		-to=>99,
+		)->grid(
+		-row=>3,
+		-column=>2,
+		-sticky=>'nw',
+		);
+	
+	$nodeFirewallsHList = $newFirewallWindow->HList(
+		-columns => 4,
+		-header => -1,
+		-width => $newHListWidth,
+		-height => $newHListHeight,
+		-command => sub{&deleteRecord($newFirewallWindow, $nodeFirewallsHList, @nodeFirewalls)},
+		)->grid(
+		-row=>1,
+		-column=>3,
+		-rowspan=>3,
+		-sticky=>'w',
+		);
+
+	$nodeFirewallsHList->headerCreate(0, -text => "Solution",);
+	$nodeFirewallsHList->headerCreate(1, -text => "Additional Time",);
+	$nodeFirewallsHList->headerCreate(2, -text => "Level",);
+
+	&createAddOKButtons($newFirewallWindow, $nodeFirewallsHList, @nodeFirewalls);
+
+	&showRecords($newFirewallWindow, $nodeFirewallsHList, @nodeFirewalls);
 }
 
 sub newFile{
+	my $newFilePathText;
+	my $newFilePathEntry;
+	my $nodeFileNameText;
+	my $nodeFileNameEntry;
+	my $nodeFileContentsText;
+	my $nodeFileContentsEntry;
 	my $newFileWindow = MainWindow->new(-title=>"New File");
-	$newFileWindow->geometry( "400x200+500+450" );
+	$newFileWindow->geometry($newWindowSize);
 	$newFileWindow->focusForce;
 	$newFilePathText = $newFileWindow->Label(
 		-text => 'Path: ',
 		)->grid(
 		-row=>1,
 		-column=>1,
-		-sticky=>"e",
+		-sticky=>"se",
 		);
 
 	$newFilePathEntry = $newFileWindow->Entry(
@@ -1071,7 +1225,7 @@ sub newFile{
 		)->grid(
 		-row=>1,
 		-column=>2,
-		-sticky=>'w',
+		-sticky=>'sw',
 		);
 	$nodeFileNameText = $newFileWindow->Label(
 		-text => 'Name: ',
@@ -1093,7 +1247,7 @@ sub newFile{
 		)->grid(
 		-row=>3,
 		-column=>1,
-		-sticky=>"e",
+		-sticky=>"ne",
 		);
 
 	$nodeFileContentsEntry = $newFileWindow->Entry(
@@ -1101,10 +1255,249 @@ sub newFile{
 		)->grid(
 		-row=>3,
 		-column=>2,
+		-sticky=>'nw',
+		);
+	$nodeFilesHList = $newFileWindow->HList(
+		-columns => 4,
+		-header => -1,
+		-width => $newHListWidth,
+		-height => $newHListHeight,
+		-command => sub{&deleteRecord($newFileWindow, $nodeFilesHList, @nodeFiles)},
+		)->grid(
+		-row=>1,
+		-column=>3,
+		-rowspan=>3,
 		-sticky=>'w',
 		);
-	#&createAddOKButtons($newFileWindow);
+
+	$nodeFilesHList->headerCreate(0, -text => "Path",);
+	$nodeFilesHList->headerCreate(1, -text => "Name",);
+	$nodeFilesHList->headerCreate(2, -text => "Contents",);
+
+	&createAddOKButtons($newFileWindow, $nodeFilesHList, @nodeFiles);
+
+	&showRecords($newFileWindow, $nodeFilesHList, @nodeFiles);
 }
+
+sub newAdminType{
+	my $newTypeText;
+	my $newTypeEntry;
+	my $nodeResetPasswordText;
+	my $nodeResetPasswordEntry;
+	my $nodeIsSuperText;
+	my $nodeIsSuperEntry;
+	my $newAdminTypeWindow = MainWindow->new(-title=>"New Admin Type");
+	$newAdminTypeWindow->geometry($newWindowSize);
+	$newAdminTypeWindow->focusForce;
+	$newTypeText = $newAdminTypeWindow->Label(
+		-text => 'Admin Type: ',
+		)->grid(
+		-row=>1,
+		-column=>1,
+		-sticky=>"se",
+		);
+
+	$newTypeEntry = $newAdminTypeWindow->Entry(
+		-width=>50,
+		)->grid(
+		-row=>1,
+		-column=>2,
+		-sticky=>'sw',
+		);
+	$nodeResetPasswordText = $newAdminTypeWindow->Label(
+		-text => 'Reset Password: ',
+		)->grid(
+		-row=>2,
+		-column=>1,
+		-sticky=>"e",
+		);
+
+	$nodeResetPasswordEntry = $newAdminTypeWindow->Checkbutton(
+		-offvalue =>"false",
+		-onvalue =>"true",
+		-variable => \$bResetPassword,
+		)->grid(
+		-row=>2,
+		-column=>2,
+		-sticky=>"w",
+		);
+	$nodeIsSuperText = $newAdminTypeWindow->Label(
+		-text => 'Is Super?: ',
+		)->grid(
+		-row=>3,
+		-column=>1,
+		-sticky=>"ne",
+		);
+
+	$nodeIsSuperEntry = $newAdminTypeWindow->Checkbutton(
+		-offvalue =>"false",
+		-onvalue =>"true",
+		-variable => \$bIsSuper,
+		)->grid(
+		-row=>3,
+		-column=>2,
+		-sticky=>"nw",
+		);
+	$nodeAdminTypesHList = $newAdminTypeWindow->HList(
+		-columns => 4,
+		-header => -1,
+		-width => $newHListWidth,
+		-height => $newHListHeight,
+		-command => sub{&deleteRecord($newAdminTypeWindow, $nodeAdminTypesHList, @nodeAdminTypes)},
+		)->grid(
+		-row=>1,
+		-column=>3,
+		-rowspan=>3,
+		-sticky=>'w',
+		);
+
+	$nodeAdminTypesHList->headerCreate(0, -text => "Admin Type",);
+	$nodeAdminTypesHList->headerCreate(1, -text => "Reset Pasword",);
+	$nodeAdminTypesHList->headerCreate(2, -text => "Is Super?",);
+
+	&createAddOKButtons($newAdminTypeWindow, $nodeAdminTypesHList, @nodeAdminTypes);
+
+	&showRecords($newAdminTypeWindow, $nodeAdminTypesHList, @nodeAdminTypes);
+}
+sub newDLink{
+	my $newDLinkTargetText;
+	my $newDLinkTargetEntry;
+	my $newDLinkWindow = MainWindow->new(-title=>"New DLink");
+	$newDLinkWindow->geometry($newWindowSize);
+	$newDLinkWindow->focusForce;
+	$newDLinkTargetText = $newDLinkWindow->Label(
+		-text => 'Target IP: ',
+		)->grid(
+		-row=>2,
+		-column=>1,
+		-sticky=>"e",
+		);
+
+	$newDLinkTargetEntry = $newDLinkWindow->Entry(
+		-width=>50,
+		)->grid(
+		-row=>2,
+		-column=>2,
+		-sticky=>'w',
+		);
+
+	$nodeDLinksHList = $newDLinkWindow->HList(
+		-columns => 1,
+		-header => -1,
+		-width => $newHListWidth,
+		-height => $newHListHeight,
+		-command => sub{&deleteRecord($newDLinkWindow, $nodeDLinksHList, @nodeDLinks)},
+		)->grid(
+		-row=>1,
+		-column=>3,
+		-rowspan=>3,
+		-sticky=>'w',
+		);
+
+	$nodeDLinksHList->headerCreate(0, -text => "Target",);
+
+	&createAddOKButtons($newDLinkWindow, $nodeDLinksHList, @nodeDLinks);
+
+	&showRecords($newDLinkWindow, $nodeDLinksHList, @nodeDLinks);
+}
+sub newCustomThemeFile{
+	my $newFilePathText;
+	my $newFilePathEntry;
+	my $nodeFileNameText;
+	my $nodeFileNameEntry;
+	my $nodeThemePathText;
+	my $nodeThemePathEntry;
+	my $newCustomThemeFileWindow = MainWindow->new(-title=>"New Custom Theme File");
+	$newCustomThemeFileWindow->geometry($newWindowSize);
+	$newCustomThemeFileWindow->focusForce;
+	$newFilePathText = $newCustomThemeFileWindow->Label(
+		-text => 'Path: ',
+		)->grid(
+		-row=>1,
+		-column=>1,
+		-sticky=>"se",
+		);
+
+	$newFilePathEntry = $newCustomThemeFileWindow->Entry(
+		-width=>50,
+		)->grid(
+		-row=>1,
+		-column=>2,
+		-sticky=>'sw',
+		);
+	$nodeFileNameText = $newCustomThemeFileWindow->Label(
+		-text => 'Name: ',
+		)->grid(
+		-row=>2,
+		-column=>1,
+		-sticky=>"e",
+		);
+
+	$nodeFileNameEntry = $newCustomThemeFileWindow->Entry(
+		-width => 50,
+		)->grid(
+		-row=>2,
+		-column=>2,
+		-sticky=>'w',
+		);
+	$nodeThemePathText = $newCustomThemeFileWindow->Label(
+		-text => 'Theme Path: ',
+		)->grid(
+		-row=>3,
+		-column=>1,
+		-sticky=>"ne",
+		);
+
+	$nodeThemePathEntry = $newCustomThemeFileWindow->Entry(
+		-width => 50,
+		)->grid(
+		-row=>3,
+		-column=>2,
+		-sticky=>'nw',
+		);
+	$nodeCustomThemeFilesHList = $newCustomThemeFileWindow->HList(
+		-columns => 4,
+		-header => -1,
+		-width => $newHListWidth,
+		-height => $newHListHeight,
+		-command => sub{&deleteRecord($newCustomThemeFileWindow, $nodeCustomThemeFilesHList, @nodeCustomThemeFiles)},
+		)->grid(
+		-row=>1,
+		-column=>3,
+		-rowspan=>3,
+		-sticky=>'w',
+		);
+
+	$nodeCustomThemeFilesHList->headerCreate(0, -text => "Path",);
+	$nodeCustomThemeFilesHList->headerCreate(1, -text => "Name",);
+	$nodeCustomThemeFilesHList->headerCreate(2, -text => "Theme Path",);
+
+	&createAddOKButtons($newCustomThemeFileWindow, $nodeCustomThemeFilesHList, @nodeCustomThemeFiles);
+
+	&showRecords($newCustomThemeFileWindow, $nodeCustomThemeFilesHList, @nodeCustomThemeFiles);
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 MainLoop;
 ################################################################################################################################################################
@@ -1118,7 +1511,7 @@ sub genXML{
 	print OUTFILE '" name="'.$nodeNameEntry->get;
 	print OUTFILE '" ip="'.$nodeIPEntry->get;
 	print OUTFILE '" security="'.$nodeSecurityEntry->get;
-	print OUTFILE '" allowsDefaultBootModule="'.$allowDBMBool;
+	print OUTFILE '" allowsDefaultBootModule="'.$bAllowDBM;
 	print OUTFILE '" icon="'.$nodeIconEntry->get;
 	print OUTFILE '" type="'.$nodeTypeEntry->get.'" >'."\n";
 
@@ -1138,15 +1531,28 @@ sub genXML{
  		print OUTFILE "\t".'<account username="'.$nodeAccounts[$i].'" password="'.$nodeAccounts[$i+1].'" type="'.$nodeAccounts[$i+2].'" />'."\n";
 	}
 
- 	#if(trackerBool){print OUTFILE "\t".'<tracker />'."\n";}else{print OUTFILE "\t".'<!--<tracker />-->'."\n";}
+	for (my $i = 0; $i < scalar(@nodeFirewalls); $i += 3) {
+ 		print OUTFILE "\t".'<firewall level="'.$nodeFirewalls[$i].'" solution="'.$nodeFirewalls[$i+1].'" additionalTime="'.$nodeFirewalls[$i+2].'" />'."\n";
+	}
+	for (my $i = 0; $i < scalar(@nodeFiles); $i += 3) {
+ 		print OUTFILE "\t".'<file path="'.$nodeFiles[$i].'" name="'.$nodeFiles[$i+1].'">'.$nodeFiles[$i+2].'</file>'."\n";
+	}
+	for (my $i = 0; $i < scalar(@nodeAdminTypes); $i += 3) {
+ 		print OUTFILE "\t".'<admin type="'.$nodeAdminTypes[$i].'" resetPassword="'.$nodeAdminTypes[$i+1].'" isSuper="'.$nodeAdminTypes[$i+2].'" />'."\n";
+	}
+	for (my $i = 0; $i < scalar(@nodeDLinks); $i++) {
+ 		print OUTFILE "\t".'<dlink target="'.$nodeDLinks[$i].'" />'."\n";
+	}
 
- 	#if(deathRowDatabaseBool){print OUTFILE "\t".'<deathRowDatabase />'."\n";}else{print OUTFILE "\t".'<!--<deathRowDatabase />-->'."\n";}
+ 	#if(bTracker){print OUTFILE "\t".'<tracker />'."\n";}else{print OUTFILE "\t".'<!--<tracker />-->'."\n";}
 
- 	#if(academicDatabaseBool){print OUTFILE "\t".'<academicDatabase />'."\n";}else{print OUTFILE "\t".'<!--<academicDatabase />-->'."\n";}
+ 	#if(bDeathRowDatabase){print OUTFILE "\t".'<deathRowDatabase />'."\n";}else{print OUTFILE "\t".'<!--<deathRowDatabase />-->'."\n";}
 
- 	#if(ispSystemBool){print OUTFILE "\t".'<ispSystem />'."\n";}else{print OUTFILE "\t".'<!--<ispSystem />-->'."\n";}
+ 	#if(bAcademicDatabase){print OUTFILE "\t".'<academicDatabase />'."\n";}else{print OUTFILE "\t".'<!--<academicDatabase />-->'."\n";}
 
-	#if(medicalDatabaseBool){print OUTFILE "\t".'<medicalDatabase />'."\n";}else{print OUTFILE "\t".'<!--<medicalDatabase />-->'."\n";}
+ 	#if(bISPSystem){print OUTFILE "\t".'<ispSystem />'."\n";}else{print OUTFILE "\t".'<!--<ispSystem />-->'."\n";}
+
+	#if(bMedicalDatabase){print OUTFILE "\t".'<medicalDatabase />'."\n";}else{print OUTFILE "\t".'<!--<medicalDatabase />-->'."\n";}
 
 
 
