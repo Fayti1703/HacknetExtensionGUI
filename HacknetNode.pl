@@ -63,6 +63,22 @@ my $title = $frame->Label(
 	-columnspan=>3,
 	);
 splice(@r,0,1);
+my $nodeXMLFileNameText = $frame->Label(
+	-text => 'XML File Name: ',
+	)->grid(
+	-row=>$r[0],
+	-column=>1,
+	-sticky=>"e",
+	);
+
+my $nodeXMLFileNameEntry = $frame->Entry(
+	-width => '20',
+	)->grid(
+	-row=>$r[0],
+	-column=>2,
+	-sticky=>'w',
+	);
+splice(@r,0,1);
 my $nodeIDText = $frame->Label(
 	-text => 'ID: ',
 	)->grid(
@@ -1502,8 +1518,7 @@ sub newCustomThemeFile{
 MainLoop;
 ################################################################################################################################################################
 sub genXML{
-	my $name = $nodeNameEntry->get;
-	my $fileName = join "", $name, ".xml";
+	my $fileName = join "", $nodeXMLFileNameEntry->get, ".xml";
 	open OUTFILE, '>', $fileName;
 	print OUTFILE '<?xml version = "1.0" encoding = "UTF-8" ?>'."\n";
 
