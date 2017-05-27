@@ -1518,8 +1518,14 @@ sub newCustomThemeFile{
 MainLoop;
 ################################################################################################################################################################
 sub genXML{
-	my $fileName = join "", $nodeXMLFileNameEntry->get, ".xml";
+	my $fileName = $nodeXMLFileNameEntry->get;
+	if($fileName =~ (m/(\*?\.xml)/)){
+	}else{
+		$fileName = join "", $fileName, ".xml";
+	}
+
 	open OUTFILE, '>', $fileName;
+
 	print OUTFILE '<?xml version = "1.0" encoding = "UTF-8" ?>'."\n";
 
 	print OUTFILE '<Computer id="'.$nodeIDEntry->get;
